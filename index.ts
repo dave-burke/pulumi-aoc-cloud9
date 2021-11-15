@@ -8,3 +8,7 @@ new aws.iam.UserPolicyAttachment('aoc-owner-policy', {
 });
 
 const group = new aws.iam.Group('aoc-members');
+new aws.iam.GroupPolicyAttachment('aoc-members-policy', {
+    group: group.name,
+    policyArn: 'arn:aws:iam::aws:policy/AWSCloud9EnvironmentMember'
+});
