@@ -7,3 +7,4 @@ new aws.iam.UserPolicyAttachment('aoc-owner-policy', {
     policyArn: 'arn:aws:iam::aws:policy/AWSCloud9Administrator',
 });
 
+const group = new aws.iam.Group('aoc-members');
