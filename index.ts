@@ -58,3 +58,10 @@ new aws.ec2.RouteTableAssociation('aoc-public-rta', {
     subnetId: subnet.id,
     routeTableId: publicRouteTable.id,
 });
+
+new aws.cloud9.EnvironmentEC2('aoc-environment', {
+    instanceType: 't3.small',
+    ownerArn: owner.arn,
+    subnetId: subnet.id,
+    tags,
+});
