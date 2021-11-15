@@ -20,8 +20,41 @@ new aws.iam.GroupPolicyAttachment('aoc-members-policy', {
 
 const members = [
     'user1',
-].map(name => new aws.iam.User(`aoc-member-${name}`))
+].map(name => new aws.iam.User(`aoc-member-${name}`, {tags}))
 new aws.iam.GroupMembership('aoc-members-membership', {
     group: group.name,
     users: members.map(user => user.name)
+});
+
+const vpc = new aws.ec2.Vpc('aoc-vpc', {
+    cidrBlock: '10.0.0.0/28',
+    tags,
+});
+
+const internetGateway = new aws.ec2.InternetGateway('aoc-gateway', {
+    vpcId: vpc.id,
+    tags,
+});
+
+const publicRouteTable = new aws.ec2.DefaultRouteTable('aoc-public-rt', {
+    defaultRouteTableId: vpc.defaultRouteTableId,
+    tags,
+});
+
+new aws.ec2.Route('aoc-route-public-sn-to-ig', {
+    routeTableId: publicRouteTable.id,
+    destinationCidrBlock: "0.0.0.0/0",
+    gatewayId: internetGateway.id,
+});
+
+const subnet = new aws.ec2.Subnet('aoc-subnet', {
+    cidrBlock: vpc.cidrBlock,
+    vpcId: vpc.id,
+    mapPublicIpOnLaunch: true,
+    tags,
+});
+
+new aws.ec2.RouteTableAssociation('aoc-public-rta', {
+    subnetId: subnet.id,
+    routeTableId: publicRouteTable.id,
 });
