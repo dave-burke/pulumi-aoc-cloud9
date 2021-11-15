@@ -1,11 +1,16 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import { Task } from "@pulumi/aws/datasync";
 
-const owner = new aws.iam.User('aoc-owner');
-new aws.iam.UserPolicyAttachment('aoc-owner-policy', {
+const tags = {'iac': 'pulumi', 'project': 'aoc-cloud9'}
+const owner = new aws.iam.User('aoc-owner', {tags});
+[
+    'arn:aws:iam::aws:policy/AWSCloud9Administrator',
+    'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess',
+].map(arn => new aws.iam.UserPolicyAttachment(`aoc-owner-policy-${arn.substring(arn.lastIndexOf('/') + 1)}`, {
     user: owner.name,
-    policyArn: 'arn:aws:iam::aws:policy/AWSCloud9Administrator',
-});
+    policyArn: arn,
+}));
 
 const group = new aws.iam.Group('aoc-members');
 new aws.iam.GroupPolicyAttachment('aoc-members-policy', {
