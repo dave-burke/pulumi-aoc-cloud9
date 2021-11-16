@@ -77,7 +77,9 @@ new aws.ec2.RouteTableAssociation('aoc-public-rta', {
 });
 
 new aws.cloud9.EnvironmentEC2('aoc-environment', {
+    description: 'Advent of Code 2021 shared coding environment',
     instanceType: 't3.small',
+    automaticStopTimeMinutes: 30,
     ownerArn: owner.arn,
     subnetId: subnet.id,
     tags,
