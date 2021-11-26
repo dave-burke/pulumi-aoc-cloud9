@@ -3,10 +3,17 @@ import * as aws from "@pulumi/aws";
 import { Task } from "@pulumi/aws/datasync";
 
 const tags = {'iac': 'pulumi', 'project': 'aoc-cloud9'}
-const owner = new aws.iam.User('aoc-owner', {tags});
+const owner = new aws.iam.User('aoc-owner', {
+    forceDestroy: true,
+    tags,
+});
 new aws.iam.UserPolicyAttachment('aoc-owner-policy-attachment', {
     user: owner.name,
     policyArn: 'arn:aws:iam::aws:policy/AWSCloud9User',
+});
+export const ownerLoginProfile = new aws.iam.UserLoginProfile(`aoc-member-owner-login-profile`, {
+    user: owner.name,
+    pgpKey: "keybase:<username that exists>",
 });
 
 const group = new aws.iam.Group('aoc-members');
@@ -17,10 +24,23 @@ new aws.iam.GroupPolicyAttachment('aoc-members-policy-attachment', {
 
 const members = [
     'user1',
-].map(name => new aws.iam.User(`aoc-member-${name}`, {tags}))
+    'user2',
+].reduce((map, name) => {
+    map.set(name, new aws.iam.User(`aoc-member-${name}`, {
+        forceDestroy: true,
+        tags,
+    }));
+    return map;
+}, new Map());
 new aws.iam.GroupMembership('aoc-members-membership', {
     group: group.name,
-    users: members.map(user => user.name)
+    users: Array.from(members, ([k,v]) => v.name),
+});
+export const memberLoginProfiles = Array.from(members, ([name,member]) => {
+    return new aws.iam.UserLoginProfile(`aoc-member-${name}-login-profile`, {
+        user: member.name,
+        pgpKey: "keybase:<username that exists>",
+    });
 });
 
 const vpc = new aws.ec2.Vpc('aoc-vpc', {
