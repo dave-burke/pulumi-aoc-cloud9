@@ -11,7 +11,7 @@ def printCreds(profile):
     print(f"Password: {decryption.stdout.decode()}")
     print()
 
-result = subprocess.run(['pulumi', 'stack', 'output', '-j'], capture_output=True, text=True)
+result = subprocess.run(['pulumi', 'stack', 'output', '--show-secrets', '-j'], capture_output=True, text=True)
 data = json.loads(result.stdout)
 
 owner_profile = data['ownerLoginProfile']

@@ -1,6 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { Task } from "@pulumi/aws/datasync";
+import { Member } from "@pulumi/aws/guardduty";
+
+const config = new pulumi.Config();
 
 const tags = {'iac': 'pulumi', 'project': 'aoc-cloud9'}
 const owner = new aws.iam.User('aoc-owner', {
@@ -13,7 +16,7 @@ new aws.iam.UserPolicyAttachment('aoc-owner-policy-attachment', {
 });
 export const ownerLoginProfile = new aws.iam.UserLoginProfile(`aoc-member-owner-login-profile`, {
     user: owner.name,
-    pgpKey: "keybase:<username that exists>",
+    pgpKey: config.requireSecret('pgpKey')
 });
 
 const group = new aws.iam.Group('aoc-members');
@@ -22,24 +25,23 @@ new aws.iam.GroupPolicyAttachment('aoc-members-policy-attachment', {
     policyArn: 'arn:aws:iam::aws:policy/AWSCloud9EnvironmentMember'
 });
 
-const members = [
-    'user1',
-    'user2',
-].reduce((map, name) => {
-    map.set(name, new aws.iam.User(`aoc-member-${name}`, {
-        forceDestroy: true,
-        tags,
-    }));
-    return map;
-}, new Map());
-new aws.iam.GroupMembership('aoc-members-membership', {
-    group: group.name,
-    users: Array.from(members, ([k,v]) => v.name),
-});
-export const memberLoginProfiles = Array.from(members, ([name,member]) => {
-    return new aws.iam.UserLoginProfile(`aoc-member-${name}-login-profile`, {
-        user: member.name,
-        pgpKey: "keybase:<username that exists>",
+export const memberLoginProfiles = config.requireSecretObject<String[]>('members').apply(names => {
+    const members = names.reduce((map, name) => {
+        map.set(name, new aws.iam.User(`aoc-member-${name}`, {
+            forceDestroy: true,
+            tags,
+        }));
+        return map;
+    }, new Map());
+    new aws.iam.GroupMembership('aoc-members-membership', {
+        group: group.name,
+        users: Array.from(members, ([k,v]) => v.name),
+    });
+    return Array.from(members, ([name,member]) => {
+        return new aws.iam.UserLoginProfile(`aoc-member-${name}-login-profile`, {
+            user: member.name,
+            pgpKey: config.requireSecret("pgpKey"),
+        });
     });
 });
 

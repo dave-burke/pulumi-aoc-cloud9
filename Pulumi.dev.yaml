@@ -1,3 +1,12 @@
 config:
+  aoc-2021:members:
+  - secure: AAABAFgcnC0PAtPnKk4rtDS3QWQHk2nWyiUdSVK48Ff+UUvtJg==
+  - secure: AAABAMYcgVTQrBvL5RYooHiZ/z/Mu7d1WFpVHkP0WZKtCgv6DYpx
+  - secure: AAABAGTpTFIimMEv3FTFOpMHQSeXS7/vP9w15jTTDbaZrWb0tQ==
+  - secure: AAABACfF5uZtdE8y7S/TFpP8Hi9yJkeDShP3CIEIn5BPI28OPV3W
+  - secure: AAABAJJ3zUBZmLgj5qRNKq3QTO/uv9Ir0HzFRcrrcKruGvk=
+  - secure: AAABAGD6M9TWvZLpPRD3O//Ajl0bdh7FEtCOAWLNHnylk0t45w==
+  aoc-2021:pgpKey:
+    secure: AAABACjVklT/Q8U7nKg4ruKXYaxYAJ4bxRRiBVnEL7+8+9Go13OY9+w3XVJIX6tvYHWjIbsAsQ==
   aws:region: us-east-1
-  aws:skipRequestingAccountId: true
+  aws:skipRequestingAccountId: "true"

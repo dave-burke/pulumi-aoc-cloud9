@@ -1,3 +1,3 @@
-name: cloud9-pulumi
+name: aoc-2021
 runtime: nodejs
 description: IaC to deploy a shared cloud9 workspace
