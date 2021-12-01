@@ -14,7 +14,7 @@ new aws.iam.UserPolicyAttachment('aoc-owner-policy-attachment', {
     user: owner.name,
     policyArn: 'arn:aws:iam::aws:policy/AWSCloud9User',
 });
-export const ownerLoginProfile = new aws.iam.UserLoginProfile(`aoc-member-owner-login-profile`, {
+export const ownerLoginProfile = new aws.iam.UserLoginProfile('aoc-member-owner-login-profile', {
     user: owner.name,
     pgpKey: config.requireSecret('pgpKey')
 });
@@ -22,7 +22,7 @@ export const ownerLoginProfile = new aws.iam.UserLoginProfile(`aoc-member-owner-
 const group = new aws.iam.Group('aoc-members');
 new aws.iam.GroupPolicyAttachment('aoc-members-policy-attachment', {
     group: group.name,
-    policyArn: 'arn:aws:iam::aws:policy/AWSCloud9EnvironmentMember'
+    policyArn: 'arn:aws:iam::aws:policy/AWSCloud9EnvironmentMember',
 });
 
 export const memberLoginProfiles = config.requireSecretObject<String[]>('members').apply(names => {
@@ -78,11 +78,25 @@ new aws.ec2.RouteTableAssociation('aoc-public-rta', {
     routeTableId: publicRouteTable.id,
 });
 
-new aws.cloud9.EnvironmentEC2('aoc-environment', {
+const environmentEc2 = new aws.cloud9.EnvironmentEC2('aoc-environment', {
     description: 'Advent of Code 2021 shared coding environment',
     instanceType: 't3.small',
     automaticStopTimeMinutes: 30,
     ownerArn: owner.arn,
     subnetId: subnet.id,
     tags,
+});
+
+new aws.iam.GroupPolicy('aoc-members-additional-permissions', {
+    group: group.name,
+    policy: environmentEc2.arn.apply(envArn => JSON.stringify({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": "cloud9:ActivateEC2Remote",
+                "Resource": envArn,
+            }
+        ]}),
+    )
 });
