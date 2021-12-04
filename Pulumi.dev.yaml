@@ -7,6 +7,9 @@ config:
   - secure: AAABAJJ3zUBZmLgj5qRNKq3QTO/uv9Ir0HzFRcrrcKruGvk=
   - secure: AAABAGD6M9TWvZLpPRD3O//Ajl0bdh7FEtCOAWLNHnylk0t45w==
   - secure: AAABAMRtcVDYJVXQeWYxF8GFioGSlUz6gvttH2UCe4gc4YwVk3Xx
+  - secure: AAABAOKt1I/6oq1BmuHpfDgw9VZRE7rgmEDscosVvKGFrYP6UF8=
+  - secure: AAABAKaCY6p9ypCUNeQ2hYTez0aYs+C0x/FXAdvb8ZvJiuIESwjB
+  - secure: AAABABr0DF71E6HQBb7LJzOBjU22I73jRizxQ4K4wNsUMjchyH/+
   aoc-2021:pgpKey:
     secure: AAABACjVklT/Q8U7nKg4ruKXYaxYAJ4bxRRiBVnEL7+8+9Go13OY9+w3XVJIX6tvYHWjIbsAsQ==
   aws:region: us-east-1
